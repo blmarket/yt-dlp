@@ -783,6 +783,7 @@ def parse_options(argv=None):
         'retry_sleep_functions': opts.retry_sleep,
         'skip_unavailable_fragments': opts.skip_unavailable_fragments,
         'keep_fragments': opts.keep_fragments,
+        'ignore_first_png': opts.ignore_first_png,
         'concurrent_fragment_downloads': opts.concurrent_fragment_downloads,
         'buffersize': opts.buffersize,
         'noresizebuffer': opts.noresizebuffer,

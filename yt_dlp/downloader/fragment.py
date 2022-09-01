@@ -41,6 +41,7 @@ class FragmentFD(FileDownloader):
     keep_fragments:     Keep downloaded fragments on disk after downloading is
                         finished
     concurrent_fragment_downloads:  The number of threads to use for native hls and dash downloads
+    ignore_first_png:   Skip initial PNG image from the fragment if exists
     _no_ytdl_file:      Don't use .ytdl file
 
     For each incomplete fragment download yt-dlp keeps on disk a special
@@ -143,8 +144,36 @@ class FragmentFD(FileDownloader):
         down.close()
         return frag_content
 
+    def _try_ignore_png(self, buf):
+        signature = buf[:8]
+        if signature != b'\x89PNG\r\n\x1a\n':
+            return buf
+        skipped = 8
+        buf = buf[8:]
+
+        while buf:
+            length = struct.unpack('>I', buf[:4])[0]
+            buf = buf[4:]
+
+            chunk_type = buf[:4]
+            buf = buf[4:]
+
+            # Chunk data, ignored
+            buf = buf[length:]
+
+            # Chunk CRC, ignored
+            buf = buf[4:]
+            skipped += 12 + length
+
+            if chunk_type == b'IEND':
+                self.to_screen(f'[{self.FD_NAME}] Ignoring initial {skipped} bytes')
+                return buf
+        return buf
+
     def _append_fragment(self, ctx, frag_content):
         try:
+            if self.params.get('ignore_first_png', True):
+                frag_content = self._try_ignore_png(frag_content)
             ctx['dest_stream'].write(frag_content)
             ctx['dest_stream'].flush()
         finally:

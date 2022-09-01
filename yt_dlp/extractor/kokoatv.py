@@ -2,12 +2,7 @@ from .common import InfoExtractor
 
 
 class KokoatvExtractorIE(InfoExtractor):
-    _VALID_URL = r'https?://(?:www\.)?kokoa\.tv/episode/(?P<id>.+)'
-    _DOMAIN_REGEX = r'''(?:[^.]+\.)?
-        (?:
-            dicecake|
-            imedia10
-        )\.com'''
+    _VALID_URL = r'https?://(?:www\.)?kokoa\.tv/(?:episode|movie)/(?P<id>.+)/?'
     _TESTS = [{
         'url': 'https://kokoa.tv/episode/%ed%99%98%ec%8a%b9%ec%97%b0%ec%95%a0-%ec%8b%9c%ec%a6%8c-2-2%ed%99%94/',
         'md5': 'TODO: md5 sum of the first 10241 bytes of the video file (use --test)',
